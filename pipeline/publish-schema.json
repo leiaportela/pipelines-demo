@@ -1,0 +1,633 @@
+{
+  "dataset": "vertex_demo_dashboard",
+  "tables": {
+    "runs": {
+      "description": "One row per pipeline run",
+      "fields": [
+        {
+          "name": "run_id",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "Pipeline run id, key of every table"
+        },
+        {
+          "name": "status",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "SUCCEEDED, FAILED or RUNNING"
+        },
+        {
+          "name": "started_at",
+          "type": "TIMESTAMP",
+          "mode": "NULLABLE",
+          "description": "Run start"
+        },
+        {
+          "name": "ended_at",
+          "type": "TIMESTAMP",
+          "mode": "NULLABLE",
+          "description": "Run end"
+        },
+        {
+          "name": "parameters",
+          "type": "JSON",
+          "mode": "NULLABLE",
+          "description": "Pipeline parameters as submitted"
+        },
+        {
+          "name": "train_automl",
+          "type": "BOOL",
+          "mode": "NULLABLE",
+          "description": "Whether AutoML trained in this run"
+        },
+        {
+          "name": "data_as_of",
+          "type": "DATE",
+          "mode": "NULLABLE",
+          "description": "Data cutoff, the run date"
+        },
+        {
+          "name": "console_url",
+          "type": "STRING",
+          "mode": "NULLABLE",
+          "description": "Vertex AI console link to the run"
+        }
+      ]
+    },
+    "step_timings": {
+      "description": "Duration and status per pipeline step",
+      "fields": [
+        {
+          "name": "run_id",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "Pipeline run id, key of every table"
+        },
+        {
+          "name": "step",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "Step name, for example build_features"
+        },
+        {
+          "name": "branch",
+          "type": "STRING",
+          "mode": "NULLABLE",
+          "description": "shared, churn, clv or demand"
+        },
+        {
+          "name": "status",
+          "type": "STRING",
+          "mode": "NULLABLE",
+          "description": "SUCCEEDED, FAILED or SKIPPED"
+        },
+        {
+          "name": "started_at",
+          "type": "TIMESTAMP",
+          "mode": "NULLABLE",
+          "description": "Step start"
+        },
+        {
+          "name": "ended_at",
+          "type": "TIMESTAMP",
+          "mode": "NULLABLE",
+          "description": "Step end"
+        },
+        {
+          "name": "duration_seconds",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Step duration"
+        }
+      ]
+    },
+    "models": {
+      "description": "One row per model per run, with how it was trained",
+      "fields": [
+        {
+          "name": "run_id",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "Pipeline run id, key of every table"
+        },
+        {
+          "name": "model",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "churn, clv or demand"
+        },
+        {
+          "name": "training_method",
+          "type": "STRING",
+          "mode": "NULLABLE",
+          "description": "AutoML Tabular, Custom XGBoost + tuning, BigQuery ML ARIMA_PLUS"
+        },
+        {
+          "name": "model_resource_name",
+          "type": "STRING",
+          "mode": "NULLABLE",
+          "description": "Model Registry resource name or BigQuery model id"
+        },
+        {
+          "name": "model_version",
+          "type": "STRING",
+          "mode": "NULLABLE",
+          "description": "Model version"
+        },
+        {
+          "name": "trained_at",
+          "type": "TIMESTAMP",
+          "mode": "NULLABLE",
+          "description": "Training date"
+        },
+        {
+          "name": "headline_metric_name",
+          "type": "STRING",
+          "mode": "NULLABLE",
+          "description": "For example AUC-PR, RMSE, MAPE"
+        },
+        {
+          "name": "headline_metric_value",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Headline metric value"
+        },
+        {
+          "name": "console_url",
+          "type": "STRING",
+          "mode": "NULLABLE",
+          "description": "Console link to the model or job"
+        },
+        {
+          "name": "machine_type",
+          "type": "STRING",
+          "mode": "NULLABLE",
+          "description": "Training machine"
+        },
+        {
+          "name": "budget",
+          "type": "STRING",
+          "mode": "NULLABLE",
+          "description": "Budget, for example 1000 milli node hours"
+        },
+        {
+          "name": "trial_count",
+          "type": "INT64",
+          "mode": "NULLABLE",
+          "description": "Tuning trials run"
+        },
+        {
+          "name": "training_duration_seconds",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Training duration"
+        },
+        {
+          "name": "trained_in_run",
+          "type": "BOOL",
+          "mode": "NULLABLE",
+          "description": "False when an earlier model was reused"
+        }
+      ]
+    },
+    "model_metrics": {
+      "description": "All scalar metrics per model, long format",
+      "fields": [
+        {
+          "name": "run_id",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "Pipeline run id, key of every table"
+        },
+        {
+          "name": "model",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "churn, clv or demand"
+        },
+        {
+          "name": "metric",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "Metric name"
+        },
+        {
+          "name": "value",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Metric value"
+        }
+      ]
+    },
+    "churn_curve_points": {
+      "description": "Precision-recall and ROC curve points",
+      "fields": [
+        {
+          "name": "run_id",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "Pipeline run id, key of every table"
+        },
+        {
+          "name": "curve",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "pr or roc"
+        },
+        {
+          "name": "threshold",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Score threshold"
+        },
+        {
+          "name": "x",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Recall (pr) or false positive rate (roc)"
+        },
+        {
+          "name": "y",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Precision (pr) or true positive rate (roc)"
+        }
+      ]
+    },
+    "churn_confusion": {
+      "description": "Confusion matrix counts by threshold",
+      "fields": [
+        {
+          "name": "run_id",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "Pipeline run id, key of every table"
+        },
+        {
+          "name": "threshold",
+          "type": "FLOAT64",
+          "mode": "REQUIRED",
+          "description": "Score threshold"
+        },
+        {
+          "name": "tp",
+          "type": "INT64",
+          "mode": "NULLABLE",
+          "description": "True positives"
+        },
+        {
+          "name": "fp",
+          "type": "INT64",
+          "mode": "NULLABLE",
+          "description": "False positives"
+        },
+        {
+          "name": "tn",
+          "type": "INT64",
+          "mode": "NULLABLE",
+          "description": "True negatives"
+        },
+        {
+          "name": "fn",
+          "type": "INT64",
+          "mode": "NULLABLE",
+          "description": "False negatives"
+        }
+      ]
+    },
+    "churn_feature_importance": {
+      "description": "Global feature importance",
+      "fields": [
+        {
+          "name": "run_id",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "Pipeline run id, key of every table"
+        },
+        {
+          "name": "feature",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "Feature name"
+        },
+        {
+          "name": "importance",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Importance"
+        },
+        {
+          "name": "rank",
+          "type": "INT64",
+          "mode": "NULLABLE",
+          "description": "1 is most important"
+        }
+      ]
+    },
+    "churn_top_customers": {
+      "description": "Top at-risk customers with top 3 attributions",
+      "fields": [
+        {
+          "name": "run_id",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "Pipeline run id, key of every table"
+        },
+        {
+          "name": "user_id",
+          "type": "INT64",
+          "mode": "REQUIRED",
+          "description": "Customer id"
+        },
+        {
+          "name": "churn_score",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Predicted churn probability"
+        },
+        {
+          "name": "rank",
+          "type": "INT64",
+          "mode": "NULLABLE",
+          "description": "1 is most at risk"
+        },
+        {
+          "name": "reason_1_feature",
+          "type": "STRING",
+          "mode": "NULLABLE",
+          "description": "Top attribution feature"
+        },
+        {
+          "name": "reason_1_value",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Top attribution value"
+        },
+        {
+          "name": "reason_2_feature",
+          "type": "STRING",
+          "mode": "NULLABLE",
+          "description": "Second attribution feature"
+        },
+        {
+          "name": "reason_2_value",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Second attribution value"
+        },
+        {
+          "name": "reason_3_feature",
+          "type": "STRING",
+          "mode": "NULLABLE",
+          "description": "Third attribution feature"
+        },
+        {
+          "name": "reason_3_value",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Third attribution value"
+        }
+      ]
+    },
+    "clv_predictions_sample": {
+      "description": "Predicted vs actual spend sample",
+      "fields": [
+        {
+          "name": "run_id",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "Pipeline run id, key of every table"
+        },
+        {
+          "name": "user_id",
+          "type": "INT64",
+          "mode": "REQUIRED",
+          "description": "Customer id"
+        },
+        {
+          "name": "predicted",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Predicted 180-day spend"
+        },
+        {
+          "name": "actual",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Actual 180-day spend"
+        },
+        {
+          "name": "segment",
+          "type": "STRING",
+          "mode": "NULLABLE",
+          "description": "Customer segment"
+        }
+      ]
+    },
+    "clv_error_by_segment": {
+      "description": "Error by customer segment",
+      "fields": [
+        {
+          "name": "run_id",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "Pipeline run id, key of every table"
+        },
+        {
+          "name": "segment",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "Customer segment"
+        },
+        {
+          "name": "customers",
+          "type": "INT64",
+          "mode": "NULLABLE",
+          "description": "Customers in segment"
+        },
+        {
+          "name": "mae",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Mean absolute error"
+        },
+        {
+          "name": "rmse",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Root mean squared error"
+        },
+        {
+          "name": "bias",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Mean predicted minus actual"
+        }
+      ]
+    },
+    "clv_deciles": {
+      "description": "Revenue and lift by predicted decile",
+      "fields": [
+        {
+          "name": "run_id",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "Pipeline run id, key of every table"
+        },
+        {
+          "name": "decile",
+          "type": "INT64",
+          "mode": "REQUIRED",
+          "description": "1 is the highest predicted spend"
+        },
+        {
+          "name": "customers",
+          "type": "INT64",
+          "mode": "NULLABLE",
+          "description": "Customers in decile"
+        },
+        {
+          "name": "predicted_revenue",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Sum of predicted spend"
+        },
+        {
+          "name": "actual_revenue",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Sum of actual spend"
+        },
+        {
+          "name": "lift",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Decile mean actual over overall mean actual"
+        }
+      ]
+    },
+    "clv_tuning_trials": {
+      "description": "Every hyperparameter tuning trial",
+      "fields": [
+        {
+          "name": "run_id",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "Pipeline run id, key of every table"
+        },
+        {
+          "name": "trial_id",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "Trial id"
+        },
+        {
+          "name": "hyperparameters",
+          "type": "JSON",
+          "mode": "NULLABLE",
+          "description": "Hyperparameters of the trial"
+        },
+        {
+          "name": "rmse",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Validation RMSE"
+        },
+        {
+          "name": "is_best",
+          "type": "BOOL",
+          "mode": "NULLABLE",
+          "description": "Best trial"
+        }
+      ]
+    },
+    "demand_forecast": {
+      "description": "Actuals and forecast with the 90% band per category per day",
+      "fields": [
+        {
+          "name": "run_id",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "Pipeline run id, key of every table"
+        },
+        {
+          "name": "category",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "Product category"
+        },
+        {
+          "name": "date",
+          "type": "DATE",
+          "mode": "REQUIRED",
+          "description": "Day"
+        },
+        {
+          "name": "kind",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "actual, holdout or forecast"
+        },
+        {
+          "name": "units",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Actual units (actual, holdout)"
+        },
+        {
+          "name": "forecast_units",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Forecast units (holdout, forecast)"
+        },
+        {
+          "name": "lower_bound",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "90% interval lower bound"
+        },
+        {
+          "name": "upper_bound",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "90% interval upper bound"
+        }
+      ]
+    },
+    "demand_holdout_metrics": {
+      "description": "Holdout MAPE and interval coverage per category",
+      "fields": [
+        {
+          "name": "run_id",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "Pipeline run id, key of every table"
+        },
+        {
+          "name": "category",
+          "type": "STRING",
+          "mode": "REQUIRED",
+          "description": "Product category"
+        },
+        {
+          "name": "mape",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Holdout MAPE"
+        },
+        {
+          "name": "coverage",
+          "type": "FLOAT64",
+          "mode": "NULLABLE",
+          "description": "Share of holdout days inside the 90% band"
+        },
+        {
+          "name": "holdout_days",
+          "type": "INT64",
+          "mode": "NULLABLE",
+          "description": "Holdout length in days"
+        }
+      ]
+    }
+  }
+}
